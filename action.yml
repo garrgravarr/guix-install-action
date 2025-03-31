@@ -30,7 +30,8 @@ runs:
         wget -nv https://ci.guix.gnu.org/search/latest/archive?query=spec:tarball+status:success+system:x86_64-linux+guix-binary.tar.xz -O guix-binary-nightly.x86_64-linux.tar.xz
       shell: bash
       name: Download
-    - run: |
+    - id: guix-install
+      run: |
         sudo -- tar --extract --file "guix-binary-nightly.x86_64-linux.tar.xz" -C / --no-overwrite-dir
         sudo -- groupadd --system guixbuild
 
@@ -44,14 +45,13 @@ runs:
         sudo chmod 664 /etc/systemd/system/{gnu-store.mount,guix-daemon.service}
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
-        echo "lsvarguix=$(ls /var/guix)" >> $GITHUB_OUTPUT
-        echo "daemonstatus=$(sudo systemctl status guix-daemon)" >> $GITHUB_OUTPUT
-        echo "::debug::ls /var/guix:  ${{ steps.install.outputs.lsvarguix }}"
-        echo "::debug::sudo systemctl status guix-daemon:  ${{ steps.install.outputs.daemonstatus}}"
+        echo "ls-var-guix=$(ls /var/guix)" >> $GITHUB_OUTPUT
+        echo "daemon-status=$(sudo systemctl status guix-daemon)" >> $GITHUB_OUTPUT
+        echo "::debug::ls /var/guix:  ${{ steps.guix-install.outputs.ls-var-guix }}"
+        echo "::debug::sudo systemctl status guix-daemon:  ${{ steps.guix-install.outputs.daemon-status}}"
 
         echo "$GUIX_PATH/bin" >> $GITHUB_PATH
       shell: bash
-      id: install
       name: Install Guix
     - name: Authorize build farm
       shell: bash
