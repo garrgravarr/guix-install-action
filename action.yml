@@ -46,7 +46,7 @@ runs:
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
 
-        sudo systemctl status gnu-store
+        sudo systemctl status /gnu/store/
         sudo systemctl status guix-daemon
 
         sudo systemctl restart guix-daemon
