@@ -44,8 +44,8 @@ runs:
         sudo chmod 664 /etc/systemd/system/{gnu-store.mount,guix-daemon.service}
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
-        echo ::set-output name=lsvarguix::$(ls /var/guix)
-        echo ::set-output name=daemonstatus::$(sudo systemctl status guix-daemon)
+        echo "lsvarguix=$(ls /var/guix)" >> $GITHUB_OUTPUT
+        echo "daemonstatus=$(sudo systemctl status guix-daemon)" >> $GITHUB_OUTPUT
         echo "::debug::ls /var/guix:  ${{ steps.install.outputs.lsvarguix }}"
         echo "::debug::sudo systemctl status guix-daemon:  ${{ steps.install.outputs.daemonstatus}}"
 
