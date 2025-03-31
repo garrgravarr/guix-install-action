@@ -46,11 +46,13 @@ runs:
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
 
+        set +e
         sudo systemctl status /gnu/store/
         sudo systemctl status guix-daemon
 
         sudo systemctl restart guix-daemon
         sudo systemctl status guix-daemon
+        set -e
 
         echo "$GUIX_PATH/bin" >> $GITHUB_PATH
       shell: bash
