@@ -49,6 +49,8 @@ runs:
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
 
+        sudo systemctl status guix-daemon
+
         echo "$GUIX_PATH/bin" >> $GITHUB_PATH
       shell: bash
       name: Install Guix
