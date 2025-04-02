@@ -33,37 +33,38 @@ runs:
     - id: guix-install
       run: |
         sudo -- tar --extract --file "guix-binary-nightly.x86_64-linux.tar.xz" -C / --no-overwrite-dir
+
         if getent group kvm > /dev/null; then
            echo "group kvm exists and build users will be added to it"
            local KVMGROUP=,kvm
         fi
 
-	    # Installing guix-daemon to run as a non-root user requires
-	    # unprivileged user namespaces.
-	    if [ -f /proc/sys/kernel/unprivileged_userns_clone ] \
-	         && [ "$(cat /proc/sys/kernel/unprivileged_userns_clone)" -ne 1 ]
-	    then
-	      echo 1 > /proc/sys/kernel/unprivileged_userns_clone || \
-		     echo "failed to enable unprivileged user namespaces"
+        # Installing guix-daemon to run as a non-root user requires
+        # unprivileged user namespaces.
+        if [ -f /proc/sys/kernel/unprivileged_userns_clone ] \
+             && [ "$(cat /proc/sys/kernel/unprivileged_userns_clone)" -ne 1 ]
+        then
+          sudo echo 1 > /proc/sys/kernel/unprivileged_userns_clone || \
+          echo "failed to enable unprivileged user namespaces"
 
-	      echo "Unprivileged user namespaces were disabled and have been enabled now."
-	      echo "This Linux feature is required by guix-daemon.  To enable it permanently, run:"
-	      echo '  echo 1 > /proc/sys/kernel/unprivileged_userns_clone'
-	      echo "from the relevant startup script."
-	    fi
+          echo "Unprivileged user namespaces were disabled and have been enabled now."
+          echo "This Linux feature is required by guix-daemon.  To enable it permanently, run:"
+          echo '  echo 1 > /proc/sys/kernel/unprivileged_userns_clone'
+          echo "from the relevant startup script."
+        fi
 
         sudo -- groupadd --system guix-daemon
 
         sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix daemon user" --system guix-daemon
 
         # ‘tar xf’ creates root:root files.  Change that.
-        chown -R guix-daemon:guix-daemon /gnu /var/guix
-        chown -R root:root /var/guix/profiles/per-user/root
+        sudo chown -R guix-daemon:guix-daemon /gnu /var/guix
+        sudo chown -R root:root /var/guix/profiles/per-user/root
 
         # The unprivileged daemon cannot create the log directory by itself.
-        mkdir -p /var/log/guix
-        chown guix-daemon:guix-daemon /var/log/guix
-        chmod 755 /var/log/guix
+        sudo mkdir -p /var/log/guix
+        sudo chown guix-daemon:guix-daemon /var/log/guix
+        sudo chmod 755 /var/log/guix
 
         # for i in $(seq -w 1 10); do
         #    sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix build user $i" --system "guixbuilder${i}"
