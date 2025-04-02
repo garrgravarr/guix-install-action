@@ -66,7 +66,7 @@ runs:
           for F in /var/guix/profiles/per-user/root/current-guix/share/guix/*.pub; do
               sudo /var/guix/profiles/per-user/root/current-guix/bin/guix archive --authorize < $F
           done
-          sudo ls -la /etc/guix
+          sudo chown -R guix-daemon:guix-daemon /etc/guix
     - run: sudo /var/guix/profiles/per-user/root/current-guix/bin/guix archive --generate-key
       shell: bash
       name: Generate keys
