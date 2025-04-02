@@ -33,11 +33,13 @@ runs:
     - id: guix-install
       run: |
         sudo -- tar --extract --file "guix-binary-nightly.x86_64-linux.tar.xz" -C / --no-overwrite-dir
-        sudo -- groupadd --system guixbuild
+        sudo -- groupadd --system guix-daemon
 
-        for i in $(seq -w 1 10); do
-            sudo useradd -g guixbuild -G guixbuild -d /var/empty -s "$(which nologin)" -c "Guix build user $i" --system "guixbuilder${i}"
-        done
+        sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix daemon user" --system guix-daemon
+
+        # for i in $(seq -w 1 10); do
+        #    sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix build user $i" --system "guixbuilder${i}"
+        # done
 
         export GUIX_PATH=/var/guix/profiles/per-user/root/current-guix
 
