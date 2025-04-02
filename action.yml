@@ -49,9 +49,6 @@ runs:
         sudo chown guix-daemon:guix-daemon /var/log/guix
         sudo chmod 755 /var/log/guix
 
-        echo "Looking at /etc/guix"
-        sudo ls -la /etc/guix
-
         export GUIX_PATH=/var/guix/profiles/per-user/root/current-guix
 
         sudo cp $GUIX_PATH/lib/systemd/system/{gnu-store.mount,guix-daemon.service} /etc/systemd/system/
@@ -59,9 +56,6 @@ runs:
 
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
-
-        echo "Looking at /etc/guix again"
-        sudo ls -la /etc/guix
 
         echo "$GUIX_PATH/bin" >> $GITHUB_PATH
       shell: bash
@@ -72,6 +66,7 @@ runs:
           for F in /var/guix/profiles/per-user/root/current-guix/share/guix/*.pub; do
               sudo /var/guix/profiles/per-user/root/current-guix/bin/guix archive --authorize < $F
           done
+          sudo ls -la /etc/guix
     - run: sudo /var/guix/profiles/per-user/root/current-guix/bin/guix archive --generate-key
       shell: bash
       name: Generate keys
