@@ -34,19 +34,7 @@ runs:
       run: |
         sudo -- tar --extract --file "guix-binary-nightly.x86_64-linux.tar.xz" -C / --no-overwrite-dir
 
-        # Installing guix-daemon to run as a non-root user requires
-        # unprivileged user namespaces.
-        if [ -f /proc/sys/kernel/unprivileged_userns_clone ] \
-             && [ "$(cat /proc/sys/kernel/unprivileged_userns_clone)" -ne 1 ]
-        then
-          sudo echo 1 > /proc/sys/kernel/unprivileged_userns_clone || \
-          echo "failed to enable unprivileged user namespaces"
-
-          echo "Unprivileged user namespaces were disabled and have been enabled now."
-          echo "This Linux feature is required by guix-daemon.  To enable it permanently, run:"
-          echo '  echo 1 > /proc/sys/kernel/unprivileged_userns_clone'
-          echo "from the relevant startup script."
-        fi
+        sudo echo 1 > /proc/sys/kernel/unprivileged_userns_clone
 
         sudo -- groupadd --system guix-daemon
 
@@ -61,9 +49,8 @@ runs:
         sudo chown guix-daemon:guix-daemon /var/log/guix
         sudo chmod 755 /var/log/guix
 
-        # for i in $(seq -w 1 10); do
-        #    sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix build user $i" --system "guixbuilder${i}"
-        # done
+        echo "Looking at /etc/guix"
+        sudo ls -la /etc/guix
 
         export GUIX_PATH=/var/guix/profiles/per-user/root/current-guix
 
@@ -73,7 +60,8 @@ runs:
         sudo systemctl daemon-reload
         sudo systemctl enable --now gnu-store.mount guix-daemon.service
 
-        sudo systemctl status guix-daemon
+        echo "Looking at /etc/guix again"
+        sudo ls -la /etc/guix
 
         echo "$GUIX_PATH/bin" >> $GITHUB_PATH
       shell: bash
