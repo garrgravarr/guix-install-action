@@ -34,11 +34,6 @@ runs:
       run: |
         sudo -- tar --extract --file "guix-binary-nightly.x86_64-linux.tar.xz" -C / --no-overwrite-dir
 
-        if getent group kvm > /dev/null; then
-           echo "group kvm exists and build users will be added to it"
-           local KVMGROUP=,kvm
-        fi
-
         # Installing guix-daemon to run as a non-root user requires
         # unprivileged user namespaces.
         if [ -f /proc/sys/kernel/unprivileged_userns_clone ] \
@@ -55,7 +50,7 @@ runs:
 
         sudo -- groupadd --system guix-daemon
 
-        sudo useradd -g guix-daemon -G guix-daemon -d /var/empty -s "$(which nologin)" -c "Guix daemon user" --system guix-daemon
+        sudo useradd -g guix-daemon -G "guix-daemon,kvm" -d /var/empty -s "$(which nologin)" -c "Guix daemon user" --system guix-daemon
 
         # ‘tar xf’ creates root:root files.  Change that.
         sudo chown -R guix-daemon:guix-daemon /gnu /var/guix
